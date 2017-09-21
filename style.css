@@ -1,0 +1,80 @@
+div.content { width: 960px }
+
+a{
+    color: black;
+    font-size: medium;
+    font-family: sans-serif;
+}
+
+h1 {
+    color: black;
+    font-family: sans-serif;
+}
+
+b{
+    color: black;
+    font-size: medium;
+    font-family: sans-serif;
+}
+
+b1{
+    color: blue;
+    font-size: medium;
+    font-family: sans-serif;
+}
+
+b2{
+    color: red;
+    font-size: medium;
+    font-family: sans-serif;
+}
+
+.button{
+    background-color:#75fb7e;
+    color: #000000;
+    padding: 0px;
+    font-size: medium;
+    font-family: sans-serif;
+    border: none;
+    cursor: pointer;
+}
+
+.dropbtn{
+    background-color:#ffffff;
+    color: #000000;
+    padding: 2px;
+    font-size: medium;
+    font-family: sans-serif;
+    border: 0px;
+    cursor: pointer;
+}
+.button:hover, .dropbtn:hover {
+    background-color: #3c9858;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    overflow: auto;
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown a:hover .dropdown a:focus{
+    background-color: #f1f1f1
+}
+
+.show{
+    display: block;
+}
