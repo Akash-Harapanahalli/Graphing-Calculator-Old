@@ -37,11 +37,19 @@ var functions = ["","","","","","","","",""];
 
 var lastNumYouNeed;
 
+var spanHoleText = '';
+spanHoleText+=' (1,7)';
+var spanAsymtoteText = '';
+spanAsymtoteText+=' x=1'
+
 function startGraphing(){
     if($(functionDropdown).prop('enabled')){
         dropDown();
     }
     init_all();
+    spanHoleText = '';
+    spanAsymtoteText = '';
+
     xInput = xMin;
     functions[currentFunction] = functionBox.value;
     console.log(functions[currentFunction]);
@@ -90,14 +98,30 @@ function refresh(funcNum){
             f__.draw();
         }
 
+        if(isNaN(func[funcNum].eval(scope))){
+            if(Math.round(func[funcNum].eval({x: (prevRound - precision)})) == Math.round(func[funcNum].eval({x: (prevRound + precision)}))){
+                console.log('Hole at (' + prevRound + ', ' + (Math.round(func[funcNum].eval({x: (prevRound + precision)}))) + ')');
+                spanHoleText += (' ' + '(' + prevRound + ', ' + (Math.round(func[funcNum].eval({x: (prevRound + precision)}))) + ')')
+                canvasContext.fillStyle = 'black';
+                canvasContext.beginPath();
+                canvasContext.arc((prevRound * xScale) + xOrigin,((Math.round(func[funcNum].eval({x: (prevRound + precision)}))) * yScale) + yOrigin, 4, 0, 2 *Math.PI);
+                canvasContext.stroke();
+            }
+        }
+        if(func[funcNum].eval(scope) === Number.POSITIVE_INFINITY || func[funcNum].eval(scope) === Number.NEGATIVE_INFINITY){
+            console.log('Vertical asymtote at x=' + prevRound);
+        }
+
         if(prevRound != Math.round(xInput)){
             prevRound = Math.round(xInput);
             scope = {x: prevRound};
             if(isNaN(func[funcNum].eval(scope))){
                 if(Math.round(func[funcNum].eval({x: (prevRound - precision)})) == Math.round(func[funcNum].eval({x: (prevRound + precision)}))){
                     console.log('Hole at (' + prevRound + ', ' + (Math.round(func[funcNum].eval({x: (prevRound + precision)}))) + ')');
-                    canvasContext.fillStyle = 'yellow';
-                    canvasContext.fillRect((prevRound * xScale) + xOrigin-2,((Math.round(func[funcNum].eval({x: (prevRound + precision)}))) * yScale) + yOrigin-2, 4, 4)
+                    canvasContext.fillStyle = 'black';
+                    canvasContext.beginPath();
+                    canvasContext.arc((prevRound * xScale) + xOrigin,((Math.round(func[funcNum].eval({x: (prevRound + precision)}))) * yScale) + yOrigin, 4, 0, 2 *Math.PI);
+                    canvasContext.stroke();
                 }
             }
             if(func[funcNum].eval(scope) === Number.POSITIVE_INFINITY || func[funcNum].eval(scope) === Number.NEGATIVE_INFINITY){
@@ -115,6 +139,8 @@ function refresh(funcNum){
             done = true;
         //    cancelAnimationFrame(frameID);
         }
+        $(spanHole).html(spanHoleText);
+        
 
     }
 

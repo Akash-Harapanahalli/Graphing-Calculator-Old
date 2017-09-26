@@ -29,13 +29,19 @@ b2{
     font-family: sans-serif;
 }
 
+b3{
+    color:black;
+    font-size: large;
+    font-family: sans-serif;
+}
+
 .button{
-    background-color:#75fb7e;
+    background-color:#ffffff;
     color: #000000;
-    padding: 0px;
+    padding: 1px;
     font-size: medium;
     font-family: sans-serif;
-    border: none;
+    border: 1px solid #000000;
     cursor: pointer;
 }
 
@@ -49,7 +55,7 @@ b2{
     cursor: pointer;
 }
 .button:hover, .dropbtn:hover {
-    background-color: #3c9858;
+    background-color: #55cccc;
 }
 
 .dropdown {

@@ -52,7 +52,14 @@
 <br></br>
 
 <canvas id = "gameCanvas" width = 1300 height = 650></canvas>
-
+<h1>Important Values:</h1>
+<b3>
+Holes:
+<span id = "spanHole">Hello</span>
+<br></br>
+Asymtotes:
+<span id = "spanAsymtote">Hello</span>
+</b3>
 <script>
 
 window.onload = function(){
@@ -60,30 +67,15 @@ window.onload = function(){
 	init_functionDropDown();
 	startGraphing();
 
-	checkForChanges();
-
-	var test = math.compile("1/x");
-	if(test.eval({x:1}) === Infinity){
-		console.log("Success");
-	}
-
-	/*
-	$('#gameCanvas').mousemove(function(e){
-		frameID = requestAnimationFrame(refresh);
-		while (mouseState = MOUSE_DOWN){
-			xMin = prev_xMin - (mousePX - prev_mousePX);
-			yMin = prev_yMin - (mousePY - prev_mousePY);
-		}
-	});
-	$('#gameCanvas').mouseup(function(e){
-		mouseState = MOUSE_UP;
-	});
-	*/
+    var spanHoleText = ' (2,3)';
+    spanHoleText+=' (1,7)';
+    var spanAsymtoteText = ' x=3';
+    spanAsymtoteText+=' x=1'
+    $(spanHole).html(spanHoleText);
+    $(spanAsymtote).html(spanAsymtoteText);
 
 
-
-
-
+    checkForChanges();
 }
 
 </script>

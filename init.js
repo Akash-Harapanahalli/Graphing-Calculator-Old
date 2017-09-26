@@ -59,11 +59,23 @@ function init_yAxis(){
 	yAxis.py = 0;
 }
 
+var spanHole;
+function init_spanHole(){
+	spanHole = document.getElementById('spanHole');
+}
+
+var spanAsymtote;
+function init_spanAsymtote(){
+	spanAsymtote = document.getElementById('spanAsymtote');
+}
+
 
 function init_all(){
 	init_canvas();
 	init_functionBox();
 	init_precisionBox();
+	init_spanHole();
+	init_spanAsymtote();
 	init_xMinBox();
 	init_xMaxBox();
 	init_yMinBox();
