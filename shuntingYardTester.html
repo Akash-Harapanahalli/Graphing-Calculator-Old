@@ -1,0 +1,160 @@
+<html>
+<body>
+    <script>
+    var infixString = "Math.sin,(,Math.PI,/,2,)".trim();
+
+    var operatorStack = [];
+    var outputQueue = [];
+
+    var infixStringTokenized = infixString.split(",");
+    console.log(infixStringTokenized);
+    const PRECEDENCE = {
+        PARENTHESES: 1000, //parentheses need to be dealt with in a different way
+        EXPONENT: 1,
+        MULTIPLY: 2,
+        DIVISION: 2,
+        ADDITION: 3,
+        SUBTRACTION: 3,
+        DEFAULT: NaN
+    }
+
+    function returnPrecedence(inToken){
+        switch(inToken){
+            case "(":
+            return PRECEDENCE.PARENTHESES;
+            case "^":
+            return PRECEDENCE.EXPONENT;
+            case "*":
+            return PRECEDENCE.MULTIPLY;
+            case "/":
+            return PRECEDENCE.DIVIDE;
+            case "+":
+            return PRECEDENCE.ADDITION;
+            case "-":
+            return PRECEDENCE.SUBTRACTION;
+            default:
+            return PRECEDENCE.DEFAULT;
+
+        }
+    }
+
+    //use  push   and  pop  for outputQueue
+    //use unshift and shift for operatorStack
+
+    while(infixStringTokenized.length > 0){
+
+        var token = infixStringTokenized.shift();
+        console.log("TOKEN: " + token);
+
+        switch(token){
+            case "+": case "-": case "*": case "/": case "^": case "Math.sin": case "Math.cos":
+
+            while(returnPrecedence(token) >= returnPrecedence(operatorStack[0])){
+                outputQueue.push(operatorStack.shift());
+            }
+            operatorStack.unshift(token);
+            break;
+
+            case ")":
+            while(operatorStack[0] != "("){
+                outputQueue.push(operatorStack.shift());
+            }
+            operatorStack.shift();
+            break;
+
+            case "(":
+            operatorStack.unshift(token);
+            break;
+
+            default:
+            //for all numbers
+            outputQueue.push(token);
+            break;
+
+        }
+        console.log("Output Queue: " + outputQueue);
+        console.log("");
+
+    }
+
+    while(operatorStack.length > 0){
+        outputQueue.push(operatorStack.shift());
+        console.log("Output Queue: " + outputQueue);
+        console.log("");
+    }
+    console.log("FINAL outputQueue: " + outputQueue);
+
+    function polishSolver(inPolish){
+        var tokenNumber = 0;
+
+        while(true){
+            if(tokenNumber > inPolish.length){
+                break;
+            }
+            var token = inPolish[tokenNumber];
+            switch(token){
+                case '+':
+                inPolish[tokenNumber] = parseFloat(inPolish[tokenNumber-2]) + parseFloat(inPolish[tokenNumber-1]);
+                inPolish.splice(tokenNumber-2, 2);
+                tokenNumber-=2;
+                break;
+
+                case '-':
+                inPolish[tokenNumber] = parseFloat(inPolish[tokenNumber-2]) - parseFloat(inPolish[tokenNumber-1]);
+                inPolish.splice(tokenNumber-2, 2);
+                tokenNumber-=2;
+                break;
+
+                case '*':
+                inPolish[tokenNumber] = parseFloat(inPolish[tokenNumber-2]) * parseFloat(inPolish[tokenNumber-1]);
+                inPolish.splice(tokenNumber-2, 2);
+                tokenNumber-=2;
+                break;
+
+                case '/':
+                inPolish[tokenNumber] = parseFloat(inPolish[tokenNumber-2]) / parseFloat(inPolish[tokenNumber-1]);
+                inPolish.splice(tokenNumber-2, 2);
+                tokenNumber-=2;
+                break;
+
+                case '^':
+                inPolish[tokenNumber] = Math.pow((parseFloat(inPolish[tokenNumber-2])), (parseFloat(inPolish[tokenNumber-1])));
+                inPolish.splice(tokenNumber-2, 2);
+                tokenNumber-=2;
+                break;
+
+                case 'Math.sin':
+                inPolish[tokenNumber] = Math.sin((parseFloat(inPolish[tokenNumber-1])));
+                inPolish.splice(tokenNumber-1, 1);
+                tokenNumber-=2;
+                break;
+
+                case 'Math.cos':
+                inPolish[tokenNumber] = Math.cos((parseFloat(inPolish[tokenNumber-1])));
+                inPolish.splice(tokenNumber-1, 1);
+                tokenNumber-=2;
+                break;
+
+                case 'Math.tan':
+                inPolish[tokenNumber] = Math.tan((parseFloat(inPolish[tokenNumber-1])));
+                inPolish.splice(tokenNumber-1, 1);
+                tokenNumber-=2;
+                break;
+
+
+
+
+                default:
+                tokenNumber++;
+                break;
+
+            }
+        }
+        return inPolish[0];
+    }
+
+    console.log(eval(polishSolver(outputQueue)));
+
+    </script>
+</body>
+</html>

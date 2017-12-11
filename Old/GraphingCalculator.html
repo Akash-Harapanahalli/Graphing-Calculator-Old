@@ -1,0 +1,91 @@
+<html>
+<title>Graphing Calculator</title>
+
+<head>
+<link rel="stylesheet" href="style.css">
+<h1>Graphing Calculator!</h1>
+<script src="jquery.js"></script>
+<script src="math.js"></script>
+<script src="animationFrame.js"></script>
+<script src="canvas.js"></script>
+<script src="movingObject.js"></script>
+<script src="axis.js"></script>
+<script src="init.js"></script>
+<script src="general.js"></script>
+</head>
+
+<body>
+<div class="content">
+
+<b>
+<div class="dropdown">
+<input type = "button" value="f1(x)" id = "functionNumber" class = "dropbtn" onclick = "dropDown()">
+<input type="text" id = "functionInput" value="">
+, Precision = <input type="text" id = "precisionInput" value="0.001" style = "width: 6em;"></b>
+  <div id="functionDropdown" class="dropdown dropdown-content">
+    <u1 class = "jq-dropdown-menu">
+        <a href="#f1">f1(x)</a>
+        <a href="#f2">f2(x)</a>
+        <a href="#f3">f3(x)</a>
+        <a href="#f4">f4(x)</a>
+        <a href="#f5">f5(x)</a>
+        <a href="#f6">f6(x)</a>
+        <a href="#f7">f7(x)</a>
+        <a href="#f8">f8(x)</a>
+        <a href="#f9">f9(x)</a>
+    </u1>
+  </div>
+</div>
+<b>
+<br></br>
+<input type="text" id = "xMinInput" value="-10" style = "width: 3em;"> &le; x &le; <input type="text" id = "xMaxInput" value="10" style = "width: 3em;"> , x-step: <input type="text" id = "xStepInput" value = "1" style = "width: 3em;">
+<br></br>
+<input type="text" id = "yMinInput" value="-5" style = "width: 3em;"> &le; y &le; <input type="text" id = "yMaxInput" value="5" style = "width: 3em;"> , y-step: <input type="text" id = "yStepInput" value = "1" style = "width: 3em;">
+</b>
+<br></br>
+<b1>First Derivative</b1> <input type="checkbox" id = "1stDerivative">
+<b2>Second Derivative</b2> <input type="checkbox" id = "2ndDerivative">
+<br></br>
+<input type="button" value="Graph!" onclick="startGraphing();" class="button">
+<input type="button" value="Home" onclick="home();" class="button">
+<input type="button" value="Trig" onclick="trig();" class="button">
+<br></br>
+
+<canvas id = "gameCanvas" width = 1300 height = 650></canvas>
+<h1>Important Values:</h1>
+<b3>
+Holes:
+<span id = "spanHole">Hello</span>
+<br></br>
+Asymtotes:
+<span id = "spanAsymtote">Hello</span>
+</b3>
+<script>
+
+window.onload = function(){
+    init_all();
+    //xMinBox.value = 'hello'//-1 * Math.round(canvas.width/130);
+    //xMaxBox.value = 'hello'//Math.round(canvas.width/130);
+    //document.getElementById("xMinInput")
+
+    //canvas.width = ($(document).width()) - 2 * canvas.offsetLeft;
+    //xMin = -1 * Math.round(canvas.width/130);
+    //xMin = Math.round(canvas.width/130);
+
+    // /130
+	init_functionDropDown();
+	startGraphing();
+
+
+    $(spanHole).html(spanHoleText);
+    $(spanAsymtote).html(spanAsymtoteText);
+
+
+    checkForChanges();
+}
+
+</script>
+</div>
+</body>
+
+</html>
