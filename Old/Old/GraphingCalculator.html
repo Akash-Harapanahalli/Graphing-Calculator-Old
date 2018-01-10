@@ -63,14 +63,20 @@ Asymtotes:
 <script>
 
 window.onload = function(){
-	init_all();
+    init_all();
+    //xMinBox.value = 'hello'//-1 * Math.round(canvas.width/130);
+    //xMaxBox.value = 'hello'//Math.round(canvas.width/130);
+    //document.getElementById("xMinInput")
+
+    //canvas.width = ($(document).width()) - 2 * canvas.offsetLeft;
+    //xMin = -1 * Math.round(canvas.width/130);
+    //xMin = Math.round(canvas.width/130);
+
+    // /130
 	init_functionDropDown();
 	startGraphing();
 
-    var spanHoleText = ' (2,3)';
-    spanHoleText+=' (1,7)';
-    var spanAsymtoteText = ' x=3';
-    spanAsymtoteText+=' x=1'
+
     $(spanHole).html(spanHoleText);
     $(spanAsymtote).html(spanAsymtoteText);
 

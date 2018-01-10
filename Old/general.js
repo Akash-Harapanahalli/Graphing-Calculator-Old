@@ -1,316 +1,303 @@
-var MOUSE_UP = 0;
-var MOUSE_DOWN = 1;
-var mouseState = MOUSE_UP;
-
-var currentDragPosition = {
-    x: 0,
-    y: 0
-}
-var beforeDragPosition = {
-    x: 0,
-    y: 0
-}
-var beforeDrag = {
-    xMin: 0,
-    xMax: 0,
-    yMin: 0,
-    yMax: 0
-}
-
-var xMin = -10;
-var xMax = 10;
-var yMin = -5;
-var yMax = 5;
-var xStep = 1;
-var yStep = 1;
-
-var precision = 0;
-var xScale = 0;
-var yScale = 0;
-var xOrigin;
-var yOrigin;
-
+var xMin, xMax, yMin, yMax;
+var xOrigin, yOrigin;
+var xScale, yScale;
+var xStep, yStep;
+var precision;
+var der1, der2;
+var currentFunctionNumber = 0;
+var functionStrings = ["","","","","","","","","",""];
 var func = [];
 
-var currentFunction = 0;
-var functions = ["","","","","","","","",""];
-
-var lastNumYouNeed;
-
-var spanHoleText = '';
-var spanAsymtoteText = '';
-
-var integral = 0;
-
-function startGraphing(){
-    if($(functionDropdown).prop('enabled')){
-        dropDown();
-    }
-    init_all();
-    spanHoleText = '';
-    spanAsymtoteText = '';
-
-    xInput = xMin;
-    functions[currentFunction] = functionBox.value;
-    console.log(functions[currentFunction]);
-
-    for(i = 8; i >= 0; i--){
-        if(!(functions[i] == "")){
-            lastNumYouNeed = i;
-            i = -1;
-        }
-    }
-
-    for(i = 0; i <= lastNumYouNeed; i++){
-        done = false;
-        xInput = xMin;
-        console.log("f"+(i+1)+"(x)="+functions[i]);
-        func[i] = math.compile(functions[i]);
-        refresh(i);
-    }
-
-
+function refreshInputs(){
+    // refreshing the inputs
+    xMin = parseFloat($(xMinInput).val());
+    xMax = parseFloat($(xMaxInput).val());
+    yMin = parseFloat($(yMinInput).val());
+    yMax = parseFloat($(yMaxInput).val());
+    xStep = parseFloat($(xStepInput).val());
+    yStep = parseFloat($(yStepInput).val());
+    precision = 1 / parseInt($(precisionInput).val());
+    der1 = $(der1Input).prop("checked");
+    der2 = $(der2Input).prop("checked");
 }
 
-var xInput = xMin;
-var done = false;
-var prevRound;
-function refresh(funcNum){
+function graph(){
+    refreshInputs();
+    functionStrings[0] = " " + $(functionInput).value;
+    func[0] = math.compile(functionStrings[0]);
+    graphing(0,precision);
+}
 
-    //frameID = requestAnimationFrame(refresh);
+function graphLowPrecision(){
+    refreshInputs();
+    functionStrings[0] = $(functionInput).value;
+    func[0] = math.compile(functionStrings[0]);
+    graphing(0,0.5);
+}
 
-    while(!done){
+function graphing(funcNum, prec){
+    console.log("Graphing...");
 
+    $("canvas").clearCanvas();
+    xOrigin = $("canvas").width()/(-1 * ( (xMax - xMin) / xMin) );
+    yOrigin = $("canvas").height() - $("canvas").height()/(-1 * ( (yMax - yMin) / yMin) );
+
+    xScale = $("canvas").width() / ( xMax - xMin );
+    yScale = -1 * $("canvas").height() / ( yMax - yMin );
+
+    var f = func[funcNum];
+    var dash = 0;
+
+    // Graph the axes
+    for(var i = 0; i < xMax; i+=xStep){
+        $("canvas").drawLine({
+            strokeStyle: "#bdbdbd",
+            strokeWidth: 2,
+            x1: xOrigin + i*xScale, y1: 0,
+            x2: xOrigin + i*xScale, y2: $('canvas').height()
+        });
+    }
+    for(var i = 0; i > xMin; i-=xStep){
+        $("canvas").drawLine({
+            strokeStyle: "#bdbdbd",
+            strokeWidth: 2,
+            x1: xOrigin + i*xScale, y1: 0,
+            x2: xOrigin + i*xScale, y2: $('canvas').height()
+        });
+    }
+    for(var i = 0; i < yMax; i+=yStep){
+        $("canvas").drawLine({
+            strokeStyle: "#bdbdbd",
+            strokeWidth: 2,
+            x1: 0, y1: yOrigin + i*yScale,
+            x2: $('canvas').width(), y2: yOrigin + i*yScale
+        });
+    }
+    for(var i = 0; i > yMin; i-=yStep){
+        $("canvas").drawLine({
+            strokeStyle: "#bdbdbd",
+            strokeWidth: 2,
+            x1: 0, y1: yOrigin + i*yScale,
+            x2: $('canvas').width(), y2: yOrigin + i*yScale
+        });
+    }
+
+    $("canvas").drawLine({
+        strokeStyle: "#000000",
+        strokeWidth: 5,
+        x1: 0, y1: yOrigin,
+        x2: $("canvas").width(), y2: yOrigin
+    });
+    $("canvas").drawLine({
+        strokeStyle: "#000000",
+        strokeWidth: 5,
+        x1: xOrigin, y1: 0,
+        x2: xOrigin, y2: $("canvas").height()
+    });
+
+    // Graph the borders, no necessary but looks really nice...
+    $('canvas').drawLine({
+        strokeStyle: '#000000',
+        strokeWidth: 2,
+        x1: 1, y1: 0,
+        x2: 1, y2: $('canvas').height()
+    });
+    $('canvas').drawLine({
+        strokeStyle: '#000000',
+        strokeWidth: 2,
+        x1: $('canvas').width() - 1, y1: 0,
+        x2: $('canvas').width() - 1, y2: $('canvas').height()
+    });
+    $('canvas').drawLine({
+        strokeStyle: '#000000',
+        strokeWidth: 2,
+        x1: 0, y1: 1,
+        x2: $('canvas').width(), y2: 1
+    });
+    $('canvas').drawLine({
+        strokeStyle: '#000000',
+        strokeWidth: 2,
+        x1: 0, y1: $('canvas').height()-1,
+        x2: $('canvas').width(), y2: $('canvas').height()-1
+    });
+
+    // Graph the Function
+    var xInput = xMin, prev_xInput;
+    var yOutput = f.eval({x: xInput}), prev_yOutput =  yOutput;
+    var f_ = (yOutput - prev_yOutput)/(xInput - prev_xInput), prev_f_ = f_;
+    var f__ = (f_ - prev_f_)/(xInput - prev_xInput), prev_f__ = f__ ;
+
+    while(xInput <= xMax){
+        //xInput = Math.round((xInput + precision) * (1/precision)) * precision;
+        xInput += prec;
+        //console.log("xInput: " + xInput);
         var scope = {x: xInput};
-        f.setPosition((xInput * xScale) + xOrigin, (func[funcNum].eval(scope) * yScale) + yOrigin);
-        f.draw();
+        yOutput = f.eval(scope);
 
-        if(firstDerivativeCheckBox.checked){
-            f_.setPosition((xInput * xScale) + xOrigin, f.getVelocity() + yOrigin);
-            f_.draw();
+        f_ = (yOutput - prev_yOutput)/(xInput - prev_xInput);
+        f__ = (f_ - prev_f_)/(xInput - prev_xInput);
+
+        if(yOutput > yMax + 10 || yOutput < yMin-10){
+            dash = 5;
+        } else {
+            dash = 0;
         }
 
-        if(secondDerivativeCheckBox.checked){
-            if(!(firstDerivativeCheckBox.checked)){
-                f_.setPosition((xInput * xScale) + xOrigin, f.getVelocity() + yOrigin);
-            }
-            f__.setPosition((xInput * xScale) + xOrigin, f_.getVelocity() + yOrigin);
-            f__.draw();
+        $("canvas").drawLine({
+            strokeStyle: "#000000",
+            strokeWidth: 2,
+            strokeDash: [dash],
+            x1: (prev_xInput * xScale + xOrigin), y1: (prev_yOutput * yScale + yOrigin),
+            x2: (xInput * xScale + xOrigin), y2: (yOutput * yScale + yOrigin)
+        });
+        if(der1){
+            $("canvas").drawLine({
+                strokeStyle: "#2329cc",
+                strokeWidth: 2,
+                x1: (prev_xInput * xScale + xOrigin), y1: (prev_f_ * yScale + yOrigin),
+                x2: (xInput * xScale + xOrigin), y2: (f_ * yScale + yOrigin)
+            });
+        }
+        if(der2){
+            $("canvas").drawLine({
+                strokeStyle: "#e33712",
+                strokeWidth: 2,
+                x1: (prev_xInput * xScale + xOrigin), y1: (prev_f__ * yScale + yOrigin),
+                x2: (xInput * xScale + xOrigin), y2: (f__ * yScale + yOrigin)
+            });
         }
 
-
-
-        if(isNaN(func[funcNum].eval(scope))){
-            if(Math.round(func[funcNum].eval({x: (prevRound - precision)})) == Math.round(func[funcNum].eval({x: (prevRound + precision)}))){
-                console.log('Hole at (' + prevRound + ', ' + (Math.round(func[funcNum].eval({x: (prevRound + precision)}))) + ')');
-                spanHoleText += (' ' + '(' + prevRound + ', ' + (Math.round(func[funcNum].eval({x: (prevRound + precision)}))) + ')')
-                canvasContext.fillStyle = 'black';
-                canvasContext.strokeStyle = 'white';
-                canvasContext.beginPath();
-                canvasContext.arc((prevRound * xScale) + xOrigin,((Math.round(func[funcNum].eval({x: (prevRound + precision)}))) * yScale) + yOrigin, 4, 0, 2 *Math.PI);
-                canvasContext.stroke();
-            }
-        }
-        if(func[funcNum].eval(scope) === Number.POSITIVE_INFINITY || func[funcNum].eval(scope) === Number.NEGATIVE_INFINITY){
-            console.log('Vertical asymtote at x=' + prevRound);
-            spanAsymtoteText += ('x=' + prevRound);
-        }
-
-        if(prevRound != Math.round(xInput)){
-            prevRound = Math.round(xInput);
-            scope = {x: prevRound};
-            if(isNaN(func[funcNum].eval(scope))){
-                if(Math.round(func[funcNum].eval({x: (prevRound - precision)})) == Math.round(func[funcNum].eval({x: (prevRound + precision)}))){
-                    console.log('Hole at (' + prevRound + ', ' + (Math.round(func[funcNum].eval({x: (prevRound + precision)}))) + ')');
-                    spanHoleText+='(' + prevRound + ', ' + (Math.round(func[funcNum].eval({x: (prevRound + precision)}))) + ') ';
-                    canvasContext.strokeStyle = 'black';
-                    canvasContext.fillStyle = 'white';
-                    canvasContext.beginPath();
-                    canvasContext.arc((prevRound * xScale) + xOrigin,((Math.round(func[funcNum].eval({x: (prevRound + precision)}))) * yScale) + yOrigin, 4, 0, 2 *Math.PI);
-                    canvasContext.stroke();
-                }
-            }
-            if(func[funcNum].eval(scope) === Number.POSITIVE_INFINITY || func[funcNum].eval(scope) === Number.NEGATIVE_INFINITY){
-                console.log('Vertical asymtote at x=' + prevRound);
-                spanAsymtoteText += ('x=' + prevRound);
-            }
-        }
-
-
-
-
-        xInput+=precision;
-
-        if(xInput >= xMax){
-            console.log("Should be done graphing.");
-            done = true;
-        //    cancelAnimationFrame(frameID);
-        }
-        $(spanHole).html(spanHoleText);
-        $(spanAsymtote).html(spanAsymtoteText);
-
-
-
+        prev_xInput = xInput;
+        prev_yOutput = yOutput;
+        prev_f_ = f_;
+        prev_f__ = f__;
     }
 
+
+    var xIn = xMin;
+    var xStp = 0.1;
+    while(xIn <= xMax){
+        funcVal = f.eval({x:xIn});
+        if(funcVal === Number.POSITIVE_INFINITY || funcVal === Number.NEGATIVE_INFINITY){
+            console.log("Asymtote at x=" + xIn);
+        }
+        if(isNaN(funcVal)){
+            console.log("Hole at x=" + xIn);
+        }
+        xIn = Math.round((xIn + xStp) * 100) / 100;
+    }
+    /*
+    xIn = Math.PI/100;
+    while(xIn <= xMax){
+
+    }
+    */
 }
 
+var isMouseDown = false;
+var beforeDrag, previousDragPosition, currentDragPosition;
 
-function home(){
-    xMin = -10;
-    xMax = 10;
-    yMin = -5;
-    yMax = 5;
-    xMinBox.value = xMin;
-    xMaxBox.value = xMax;
-    yMinBox.value = yMin;
-    yMaxBox.value = yMax;
-    xStepBox.value = "1";
-    startGraphing();
-}
+function init(){
+    $('canvas').on('mousedown', function(e){
 
-function trig(){
-    xMinBox.value = "-2pi";
-    xMaxBox.value = "2pi";
-    yMinBox.value = "-3";
-    yMaxBox.value = "3";
-    xStepBox.value = "pi/4";
-    startGraphing();
-}
-
-function checkForChanges(){
-    $(canvas).on('mousedown', function(e){
-		console.log("in mousedown");
-		mouseState = MOUSE_DOWN;
-
+        isMouseDown = true;
         beforeDrag = {
             xMin: xMin,
             xMax: xMax,
             yMin: yMin,
             yMax: yMax
         }
+
         previousDragPosition = {
-            x: (e.pageX - canvas.offsetLeft),
-            y: (e.pageY - canvas.offsetTop)
-        };
+            x: (e.offsetX),
+            y: (e.offsetY)
+        }
         currentDragPosition = {
-            x: (e.pageX - canvas.offsetLeft),
-            y: (e.pageY - canvas.offsetTop)
-        };
-        console.log('(' + previousDragPosition.x + ', ' + previousDragPosition.y + ')');
-	});
-
-    $(canvas).on('mousemove', function(e){
-        if(mouseState === MOUSE_DOWN){
-            //console.log("dragging");
-            currentDragPosition = {
-                x: (e.pageX - canvas.offsetLeft),
-                y: (e.pageY - canvas.offsetTop)
-            };
-            xMin = beforeDrag.xMin + ((previousDragPosition.x - currentDragPosition.x)/xScale);
-            xMax = beforeDrag.xMax + ((previousDragPosition.x - currentDragPosition.x)/xScale);
-            yMin = beforeDrag.yMin + ((previousDragPosition.y - currentDragPosition.y)/yScale);
-            yMax = beforeDrag.yMax + ((previousDragPosition.y - currentDragPosition.y)/yScale);
-
-            xMinBox.value = xMin;
-            xMaxBox.value = xMax;
-            yMinBox.value = yMin;
-            yMaxBox.value = yMax;
-
-
-            startGraphing();
-
-            //console.log('delta x = ' + (previousDragPosition.x - currentDragPosition.x)/xScale + ', delta y = ' + (previousDragPosition.y - currentDragPosition.y)/yScale);
+            x: (e.offsetX),
+            y: (e.offsetY)
         }
 
     });
 
-    $(canvas).on('mouseup', function(e){
-		console.log("in mouseup");
-		mouseState = MOUSE_UP;
-        currentDragPosition = {
-            x: (e.pageX - canvas.offsetLeft),
-            y: (e.pageY - canvas.offsetTop)
-        };
-        startGraphing();
-	});
+    $('canvas').on('mousemove', function(e){
+        if(isMouseDown){
+            console.log("dragging...");
+            currentDragPosition = {
+                x: (e.offsetX),
+                y: (e.offsetY)
+            }
+            /*
+            xMin = ((beforeDrag.xMin) + ((previousDragPosition.x - currentDragPosition.x)/xScale));
+            xMax = ((beforeDrag.xMax) + ((previousDragPosition.x - currentDragPosition.x)/xScale));
+            yMin = ((beforeDrag.yMin) + ((previousDragPosition.y - currentDragPosition.y)/yScale));
+            yMax = ((beforeDrag.yMax) + ((previousDragPosition.y - currentDragPosition.y)/yScale));
+            */
+            $(xMinInput).val(((beforeDrag.xMin) + ((previousDragPosition.x - currentDragPosition.x)/xScale)));
+            $(xMaxInput).val(((beforeDrag.xMax) + ((previousDragPosition.x - currentDragPosition.x)/xScale)));
+            $(yMinInput).val(((beforeDrag.yMin) + ((previousDragPosition.y - currentDragPosition.y)/yScale)));
+            $(yMaxInput).val(((beforeDrag.yMax) + ((previousDragPosition.y - currentDragPosition.y)/yScale)));
 
-    $('#functionInput').on('input', function() {
-		startGraphing();
-	});
-	$('#precisionInput').on('input', function() {
-		startGraphing();
-	});
-	$('#1stDerivative').on('change', function() {
-		startGraphing();
-	});
-	$('#2ndDerivative').on('change', function() {
-		startGraphing();
+            graphLowPrecision();
+        }
     });
-    $('#xMinInput').on('input', function() {
-		startGraphing();
+
+    $('canvas').on('mouseup', function(e){
+        isMouseDown = false;
+        graph();
     });
-    $('#xMaxInput').on('input', function() {
-		startGraphing();
-    });
-    $('#yMinInput').on('input', function() {
-		startGraphing();
-    });
-    $('#yMaxInput').on('input', function() {
-		startGraphing();
-    });
-    $('#xStepInput').on('input', function() {
-		startGraphing();
-    });
-    $('#yStepInput').on('input', function() {
-		startGraphing();
-    });
+
+
+    $(functionInput).on('input',function(){ graph(); });
+    $(xMinInput).on('input',function(){ graph(); });
+    $(xMaxInput).on('input',function(){ graph(); });
+    $(yMinInput).on('input',function(){ graph(); });
+    $(yMaxInput).on('input',function(){ graph(); });
+    $(xStepInput).on('input',function(){ graph(); });
+    $(yStepInput).on('input',function(){ graph(); });
+    $(precisionInput).on('input',function(){ graph(); });
+    $(der1Input).on('change',function(){ graph(); });
+    $(der2Input).on('change',function(){ graph(); });
     $(functionDropdown).on('click', function(e){
-        console.log(e.target.hash);
-        setCurrentFunction(e.target.hash);
-        dropDown();
+        console.log(e);
     });
-
 }
 
-function setCurrentFunction(inFunc){
-    switch (inFunc){
-    case '#f1':
-        currentFunction = 0;
-        functionNumber.value = "f1(x)";
+function setCurrentFunctionNumber(f){
+    switch(f){
+        case '#f1':
+        currentFunctionNumber = 0;
         break;
-    case '#f2':
-        currentFunction = 1;
-        functionNumber.value = "f2(x)";
+        case '#f2':
+        currentFunctionNumber = 1;
         break;
-    case '#f3':
-        currentFunction = 2;
-        functionNumber.value = "f3(x)";
+        case '#f3':
+        currentFunctionNumber = 2;
         break;
-    case '#f4':
-        currentFunction = 3;
-        functionNumber.value = "f4(x)";
+        case '#f4':
+        currentFunctionNumber = 3;
         break;
-    case '#f5':
-        currentFunction = 4;
-        functionNumber.value = "f5(x)";
+        case '#f5':
+        currentFunctionNumber = 4;
         break;
-    case '#f6':
-        currentFunction = 5;
-        functionNumber.value = "f6(x)";
+        case '#f6':
+        currentFunctionNumber = 5;
         break;
-    case '#f7':
-        currentFunction = 6;
-        functionNumber.value = "f7(x)";
+        case '#f7':
+        currentFunctionNumber = 6;
         break;
-    case '#f8':
-        currentFunction = 7;
-        functionNumber.value = "f8(x)";
+        case '#f8':
+        currentFunctionNumber = 7;
         break;
-    case '#f9':
-        currentFunction = 8;
-        functionNumber.value = "f9(x)";
+        case '#f9':
+        currentFunctionNumber = 8;
         break;
+        case '#f10':
+        currentFunctionNumber = 9;
+        break;
+
     }
-    functionBox.value = functions[currentFunction];
+}
+
+function dropDown(){
+    $(functionDropdown).toggle("show");
 }
