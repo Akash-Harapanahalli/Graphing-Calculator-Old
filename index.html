@@ -1,9 +1,11 @@
 <html>
 
 <head>
-    <script src = "Includes\jquery.js"></script>
-    <script src = "Includes\jcanvas.js"></script>
-    <script src = "Includes\graph.js"></script>
+    <link rel="stylesheet" href="./mathquill-0.10.1/mathquill.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="./mathquill-0.10.1/mathquill.js"></script>
+    <script src = "https://raw.githubusercontent.com/caleb531/jcanvas/v20.1.4/dist/jcanvas.js"></script>
+    <script src = "./Includes/graph.js"></script>
 </head>
 
 <body>
@@ -12,13 +14,7 @@
         window.onload = function(){
 
             $('body').css('overflow', 'hidden');
-            /*
-            setInterval(function(){
-                updateCanvas();
-                updateGlobals();
-                drawAxes();
-            }, 10);
-            */
+
             updateCanvas();
             updateGlobals();
             drawAxes();
@@ -28,39 +24,7 @@
                 updateGlobals();
                 drawAxes();
             });
-            /*
-            $('#canvas').drawArc({
-                layer: true,
-                x: 100, y: 100,
-                strokeStyle: '#000000',
-                fillStyle: '#000000',
-                radius: 3,
-
-                mouseover: function(layer){
-                    $(this).animateLayer(layer, {
-                        radius: 5
-                    }, 0);
-
-                },
-                click: function(layer){
-                    $('#canvas').drawText({
-                        fillStyle: '#000000',
-                        strokeStyle: '#000000',
-                        strokeWidth: 1,
-                        x: 120, y: 120,
-                        fontSize: '10pt',
-                        fontFamily: 'Ubuntu, sans-serif',
-                        text: '(x,y)'
-                    });
-                },
-
-                mouseout: function(layer){
-                    $(this).animateLayer(layer, {
-                        radius: 3
-                    }, 100);
-                }
-            });
-            */
+            
         }
     </script>
 </body>
